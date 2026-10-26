@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { Leaf } from 'lucide-react-native';
 import { useHabits } from '../hooks/useHabits';
-import { colors, fonts, radius } from '../screens-ui/theme';
+import { colors, fonts, radius } from '../theme';
 
 const LOAD_TIMEOUT_MS = 10000;
 
