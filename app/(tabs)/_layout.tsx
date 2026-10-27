@@ -2,7 +2,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { ChartColumn, House } from 'lucide-react-native';
-import { colors, fonts } from '../../screens-ui/theme';
+import { colors, fonts } from '../../theme';
 
 export default function TabsLayout() {
   return (
