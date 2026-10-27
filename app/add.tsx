@@ -19,8 +19,7 @@ import { PrimaryButton } from '../components/PrimaryButton';
 import { SecondaryButton } from '../components/SecondaryButton';
 import { CategoryDropdown } from '../components/CategoryDropdown';
 import { HabitIconPicker } from '../components/HabitIconPicker';
-import { colors, fonts, radius } from '../theme';
-import { HIT_SIZE } from '../screens-ui/theme';
+import { colors, fonts, radius, HIT_SIZE } from '../theme';
 
 export default function AddHabitScreen() {
   const { addHabit } = useHabits();
