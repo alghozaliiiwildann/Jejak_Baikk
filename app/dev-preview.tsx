@@ -14,7 +14,7 @@ import { EmptyState } from '../components/EmptyState';
 import { ErrorState } from '../components/ErrorState';
 import { ConfirmDeleteDialog } from '../components/ConfirmDeleteDialog';
 import { WeeklyBarChart } from '../components/WeeklyBarChart';
-import { CategoryDropdown } from '../screens-ui/CategoryDropdown';
+import { CategoryDropdown } from '../components/CategoryDropdown';
 
 export default function DevPreview() {
   const [chipSelected, setChipSelected] = React.useState(false);

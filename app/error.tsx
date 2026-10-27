@@ -4,8 +4,8 @@ import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { useHabits } from '../hooks/useHabits';
-import { ErrorState } from '../screens-ui/ErrorState';
-import { colors, fonts } from '../screens-ui/theme';
+import { ErrorState } from '../components/ErrorState';
+import { colors, fonts } from '../theme';
 
 export default function ErrorScreen() {
   const { loading, error, retry } = useHabits();
