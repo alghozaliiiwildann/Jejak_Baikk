@@ -12,10 +12,10 @@ import { router } from 'expo-router';
 import { CalendarDays } from 'lucide-react-native';
 import { useHabits } from '../../hooks/useHabits';
 import { useProgress } from '../../hooks/useProgress';
-import { EmptyState } from '../../screens-ui/EmptyState';
-import { ProgressCard } from '../../screens-ui/ProgressCard';
-import { WeeklyBarChart } from '../../screens-ui/WeeklyBarChart';
-import { colors, fonts, radius, shadow } from '../../screens-ui/theme';
+import { EmptyState } from '../../components/EmptyState';
+import { ProgressCard } from '../../components/ProgressCard';
+import { WeeklyBarChart } from '../../components/WeeklyBarChart';
+import { colors, fonts, radius, shadow } from '../../theme';
 
 export default function ProgressScreen() {
   const { loading, error } = useHabits();
