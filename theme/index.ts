@@ -4,3 +4,4 @@ export { fonts } from './fonts';
 export { radius } from './radius';
 export { spacing } from './spacing';
 export { shadow } from './shadow';
+export { HIT_SIZE } from './layout';
