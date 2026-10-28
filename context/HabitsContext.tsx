@@ -12,7 +12,7 @@ import React, {
   useState,
 } from "react";
 
-import { loadHabits, saveHabits } from "../services/storageService";
+import { habitRepository } from "../context/repository";
 import { createId } from "../utils/id";
 import type { Habit, HabitCategory } from "../types/habit";
 import { getTodayLocal } from "../utils/date";
@@ -63,7 +63,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     habitsRef.current = next;
     setHabits(next);
     saveQueueRef.current = saveQueueRef.current.then(() =>
-      saveHabits(next).catch((saveError: unknown) => {
+      habitRepository.saveHabits(next).catch((saveError: unknown) => {
         if (isMountedRef.current) setError(toErrorMessage(saveError));
       })
     );
@@ -73,7 +73,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     setLoading(true);
     setError(null);
     try {
-      const data = await loadHabits();
+      const data = await habitRepository.loadHabits();
       if (!isMountedRef.current) return;
       habitsRef.current = data;
       setHabits(data);
@@ -131,6 +131,7 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       const completions = alreadyDone
         ? withoutToday
         : [...withoutToday, today];
+      await habitRepository.setCompletion(id, today, completions.length > 0);
 
       applyHabits(
         current.map((item) =>
@@ -143,7 +144,8 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
 
   const deleteHabit = useCallback(
     async (id: string) => {
-      applyHabits(habitsRef.current.filter((item) => item.id !== id));
+      const current = habitsRef.current.filter((item) => item.id !== id);
+      await habitRepository.saveHabits(current);
     },
     [applyHabits]
   );
