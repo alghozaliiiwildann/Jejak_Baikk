@@ -36,7 +36,7 @@
     "web": "expo start --web",
     "lint": "expo lint",
     "typecheck": "tsc --noEmit",
-    "test": "node --import tsx --test utils/__tests__/date.test.ts utils/__tests__/progress.test.ts"
+    "test": "node --import tsx --test utils/__tests__/date.test.ts utils/__tests__/progress.test.ts services/__tests__/repository.test.ts"
   },
   "private": true
 }
