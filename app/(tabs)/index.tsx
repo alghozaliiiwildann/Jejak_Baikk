@@ -13,16 +13,16 @@ import { router } from 'expo-router';
 import { Bell, Plus } from 'lucide-react-native';
 import { useHabits } from '../../hooks/useHabits';
 import { useProgress } from '../../hooks/useProgress';
-import { EmptyState } from '../../screens-ui/EmptyState';
-import { HabitCard } from '../../screens-ui/HabitCard';
-import { ProgressCard } from '../../screens-ui/ProgressCard';
-import { formatToday, greetingByHour, toLocalDateString } from '../../screens-ui/localDate';
-import { colors, fonts, shadow } from '../../screens-ui/theme';
+import { EmptyState } from '../../components/EmptyState';
+import { HabitCard } from '../../components/HabitCard';
+import { ProgressCard } from '../../components/ProgressCard';
+import { formatTanggalIndonesia, getGreeting, getTodayLocal } from '../../utils/date';
+import { colors, fonts, shadow } from '../../theme';
 
 export default function HomeScreen() {
   const { habits, loading, error, toggleToday } = useHabits();
   const { todayPercent, doneToday, total } = useProgress();
-  const today = toLocalDateString();
+  const today = getTodayLocal();
 
   // Jika pembacaan data gagal, arahkan ke layar Error (PRD bagian 8.6)
   useEffect(() => {
@@ -52,8 +52,8 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View style={styles.headerTexts}>
             <Text style={styles.greeting}>Hai, Arief 👋</Text>
-            <Text style={styles.subGreeting}>{greetingByHour()}</Text>
-            <Text style={styles.date}>{formatToday()}</Text>
+            <Text style={styles.subGreeting}>{'Selamat ' + getGreeting() + '!'}</Text>
+            <Text style={styles.date}>{formatTanggalIndonesia(getTodayLocal())}</Text>
           </View>
           <View
             style={styles.bellBox}
@@ -65,12 +65,7 @@ export default function HomeScreen() {
         </View>
 
         {/* Kartu Progres Hari Ini */}
-        <ProgressCard
-          percent={todayPercent}
-          done={doneToday}
-          total={total}
-          title="Progres Hari Ini"
-        />
+        <ProgressCard percent={todayPercent} done={doneToday} total={total} />
 
         {/* Daftar Kebiasaan */}
         <Text style={styles.sectionTitle}>Daftar Kebiasaan</Text>
@@ -86,7 +81,7 @@ export default function HomeScreen() {
           habits.map((habit) => (
             <HabitCard
               key={habit.id}
-              habit={habit}
+              habit={{ id: habit.id, name: habit.name, icon: habit.icon }}
               doneToday={habit.completions.includes(today)}
               onToggle={() => toggleToday(habit.id)}
               onPress={() =>

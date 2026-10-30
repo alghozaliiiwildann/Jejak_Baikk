@@ -6,16 +6,15 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Check, ChevronLeft, Trash } from 'lucide-react-native';
 import { useHabits } from '../../hooks/useHabits';
 import { PrimaryButton } from '../../components/PrimaryButton';
-import { CategoryChip } from '../../screens-ui/CategoryChip';
-import { ConfirmDeleteDialog } from '../../screens-ui/ConfirmDeleteDialog';
-import { EmptyState } from '../../screens-ui/EmptyState';
-import { HabitIcon } from '../../screens-ui/habitIcon';
+import { CategoryChip } from '../../components/CategoryChip';
+import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
+import { EmptyState } from '../../components/EmptyState';
+import { HabitIcon } from '../../components/HabitIcon';
 import {
-  formatFullDate,
-  formatToday,
-  toLocalDateString,
-} from '../../screens-ui/localDate';
-import { colors, fonts, radius, shadow, HIT_SIZE } from '../../screens-ui/theme';
+  formatTanggalIndonesia,
+  getTodayLocal,
+} from '../../utils/date';
+import { colors, fonts, radius, shadow, HIT_SIZE } from '../../theme';
 
 export default function DetailHabitScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -52,7 +51,7 @@ export default function DetailHabitScreen() {
     );
   }
 
-  const today = toLocalDateString();
+  const today = getTodayLocal();
   const doneToday = habit.completions.includes(today);
   const history = [...habit.completions].sort((a, b) => (a < b ? 1 : -1));
 
@@ -99,7 +98,9 @@ export default function DetailHabitScreen() {
 
         {/* Status selesai hari ini */}
         <View style={styles.card}>
-          <Text style={styles.todayDate}>Tanggal hari ini: {formatToday()}</Text>
+          <Text style={styles.todayDate}>
+            Tanggal hari ini: {formatTanggalIndonesia(getTodayLocal())}
+          </Text>
 
           {doneToday ? (
             <View style={styles.doneStatus} accessibilityRole="alert">
@@ -127,7 +128,7 @@ export default function DetailHabitScreen() {
                 <View style={styles.historyCheck}>
                   <Check size={14} color={colors.success} strokeWidth={3} />
                 </View>
-                <Text style={styles.historyText}>{formatFullDate(date)}</Text>
+                <Text style={styles.historyText}>{formatTanggalIndonesia(date)}</Text>
               </View>
             ))
           )}
