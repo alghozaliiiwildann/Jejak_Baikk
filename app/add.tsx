@@ -17,9 +17,9 @@ import { useHabits } from '../hooks/useHabits';
 import type { HabitCategory } from '../types/habit';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { SecondaryButton } from '../components/SecondaryButton';
-import { CategoryDropdown } from '../screens-ui/CategoryDropdown';
-import { HabitIconPicker } from '../screens-ui/HabitIconPicker';
-import { colors, fonts, radius, HIT_SIZE } from '../screens-ui/theme';
+import { CategoryDropdown } from '../components/CategoryDropdown';
+import { HabitIconPicker } from '../components/HabitIconPicker';
+import { colors, fonts, radius, HIT_SIZE } from '../theme';
 
 export default function AddHabitScreen() {
   const { addHabit } = useHabits();
