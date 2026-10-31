@@ -1,6 +1,5 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { formatShortDate } from '../screens-ui/localDate';
 import { colors, fonts, radius } from '../theme';
 
 interface WeeklyBarChartProps {
@@ -34,7 +33,6 @@ export const WeeklyBarChart = ({ data }: WeeklyBarChartProps) => {
               />
             </View>
             <Text style={styles.dayLabel}>{day.dayLabel}</Text>
-            <Text style={styles.dateLabel}>{formatShortDate(day.date)}</Text>
           </View>
         );
       })}
