@@ -42,7 +42,7 @@ Setiap file hanya boleh memiliki **satu pemilik** (role). Jika file terdaftar di
 **B** = Design System & Komponen: `theme` (token desain), `components` (SEMUA komponen reusable dari kontrak: PrimaryButton, SecondaryButton, CategoryChip, ProgressBar, CircularProgress, HabitCard, ProgressCard, HabitIconPicker, EmptyState, ErrorState, ConfirmDeleteDialog, WeeklyBarChart — semuanya dari Dev B)
 
 **C** = Layar & Integrasi: `app/index`, `app/(tabs)`, `app/add`, `app/habit`, `app/error` (layar lengkap, Dev C)
-  - `screens-ui/` hanyalah **kandidasi sementara** berisi komponen duplikat dari Dev C yang **dilarang menambah file baru** dan akan **dihapus** setelah konsolidasi ke `components/`
+  - Semua layar memakai komponen dari `components/` dan token dari `theme/`. Folder `screens-ui/` sudah dihapus.
   - Setiap file layar di `app/` harus mengimpor komponen dari `components/` saja
 
 ```
