@@ -37,7 +37,7 @@ Run lint and typecheck before declaring any task done.
 ### Kontrak Komponen
 - **SEMUA** komponen di bawah ini wajib diimpor dari `components/` (Dev B):
   `PrimaryButton`, `SecondaryButton`, `CategoryChip`, `ProgressBar`, `CircularProgress`, `HabitCard`, `ProgressCard`, `HabitIconPicker`, `EmptyState`, `ErrorState`, `ConfirmDeleteDialog`, `WeeklyBarChart`
-- `components/` adalah **satu-satunya sumber** komponen reusable; `screens-ui/` hanyalah kandidasi sementara dari Dev C yang **dilarang menambah file baru** dan akan **dihapus** setelah konsolidasi.
+- `components/` adalah **satu-satunya sumber** komponen reusable, dan `theme/` satu-satunya sumber token desain. Folder `screens-ui/` (komponen sementara) sudah dihapus dan tidak boleh dibuat lagi.
 - Setiap elemen hanya boleh memiliki **satu atribut** `style`.
 
 ### Pembagian Folder per Peran
@@ -47,7 +47,7 @@ Run lint and typecheck before declaring any task done.
 - **B** = Design System & Komponen: `theme` (token desain), `components` (SEMUA komponen reusable dari kontrak, lihat daftar di atas — Dev B)
 
 - **C** = Layar & Integrasi: `app/index`, `app/(tabs)`, `app/add`, `app/habit`, `app/error` (layar lengkap, Dev C)
-  - `screens-ui/` Semua layar memakai komponen dari `components/` dan token dari `theme/`. Folder `screens-ui/` sudah dihapus.
+    - Semua layar memakai komponen dari `components/` dan token dari `theme/`.
 ### Aturan tsc
 - `tsc --noEmit` harus lolos tanpa error (0 error).
 - Larangan utuh terhadap `any` dan `@ts-ignore`.
