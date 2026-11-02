@@ -95,35 +95,18 @@ export function createLocalHabitRepository(storage: StorageAdapter): HabitReposi
       await this.saveHabits(updated);
     },
 
-    async setCompletion(habitId: string, date: string, done: boolean) {
+        async setCompletion(habitId: string, date: string, done: boolean) {
       const current = await this.loadHabits();
       const habit = current.find((item) => item.id === habitId);
       if (!habit) return;
 
-      const today = date;
-
-      // Gunakan parameter 'done' untuk menentukan apapa tanggal harus disimpan.
-      // done = true → tanggal ditambahkan ke completions
-      // done = false → tanggal dihapus dari completions
-      if (done) {
-        // Tambahkan hari jika belum ada
-        const alreadyDone = habit.completions.includes(today);
-        const withoutToday = habit.completions.filter((d) => d !== today);
-        const completions = alreadyDone
-          ? withoutToday
-          : [...withoutToday, today];
-        const updated = current.map((item) =>
-          item.id === habitId ? { ...item, completions } : item
-        );
-        await this.saveHabits(updated);
-      } else {
-        // Hapus hari dari completions
-        const withoutToday = habit.completions.filter((d) => d !== today);
-        const updated = current.map((item) =>
-          item.id === habitId ? { ...item, completions: withoutToday } : item
-        );
-        await this.saveHabits(updated);
-      }
+      // done=true: pastikan tanggal ada (tanpa duplikat). done=false: pastikan tanggal tidak ada.
+      const withoutDate = habit.completions.filter((d) => d !== date);
+      const completions = done ? [...withoutDate, date] : withoutDate;
+      const updated = current.map((item) =>
+        item.id === habitId ? { ...item, completions } : item
+      );
+      await this.saveHabits(updated);
     },
 
     async deleteHabit(habitId: string) {
