@@ -131,7 +131,8 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
       const completions = alreadyDone
         ? withoutToday
         : [...withoutToday, today];
-      await habitRepository.setCompletion(id, today, completions.length > 0);
+
+            await habitRepository.setCompletion(id, today, !alreadyDone);
 
       applyHabits(
         current.map((item) =>
@@ -142,10 +143,10 @@ export function HabitsProvider({ children }: { children: React.ReactNode }) {
     [applyHabits]
   );
 
-  const deleteHabit = useCallback(
+    const deleteHabit = useCallback(
     async (id: string) => {
-      const current = habitsRef.current.filter((item) => item.id !== id);
-      await habitRepository.saveHabits(current);
+      await habitRepository.deleteHabit(id);
+      applyHabits(habitsRef.current.filter((item) => item.id !== id));
     },
     [applyHabits]
   );
