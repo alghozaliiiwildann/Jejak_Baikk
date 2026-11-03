@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 
-import { getTodayLocal } from "../utils/date";
 import {
   calcDailyPercent,
   calcLast7Days,
@@ -10,10 +9,10 @@ import { useHabits } from "./useHabits";
 
 /** Kontrak: { total, doneToday, todayPercent, last7Days, weeklyAverage } */
 export function useProgress() {
-  const { habits } = useHabits();
+  // habits & today dari sumber yang sama (HabitsContext) agar Home dan Progress konsisten.
+  const { habits, today } = useHabits();
 
   return useMemo(() => {
-    const today = getTodayLocal();
     const doneToday = habits.filter((habit) =>
       habit.completions.includes(today)
     ).length;
@@ -25,5 +24,5 @@ export function useProgress() {
       last7Days: calcLast7Days(habits),
       weeklyAverage: calcWeeklyAverage(habits),
     };
-  }, [habits]);
+  }, [habits, today]);
 }

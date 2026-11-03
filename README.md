@@ -110,3 +110,13 @@ C = Layar & Integrasi
 - `react-native-safe-area-context` - safe area handling
 
 
+## 💾 Penyimpanan data
+
+- Data kebiasaan disimpan secara lokal di perangkat menggunakan `@react-native-async-storage/async-storage`
+- Format penyimpanan: `{ version: 1, habits: [{ id, name, category, icon, createdAt, completions: string[] }] }`
+- Key storage: `jejakbaik.habits.v1`
+- Setiap penyimpananmenormalkan completions (menghapus duplikat tanggal, urutan menaik)
+- Belum ada sinkronisasi cloud atau backend; data hilang saat memb uninstall aplikasi
+- Versi data saat ini: v1 (adanya mekanisme validasi versi untuk data lama)
+
+
