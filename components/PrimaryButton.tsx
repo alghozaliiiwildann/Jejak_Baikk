@@ -1,5 +1,12 @@
+
 import React from 'react';
-import { Pressable, Text, StyleSheet } from 'react-native';
+import {
+  Pressable,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+} from 'react-native';
+import { colors, fonts, radius } from '../theme';
 
 interface PrimaryButtonProps {
   label: string;
@@ -8,11 +15,28 @@ interface PrimaryButtonProps {
   loading?: boolean;
 }
 
-export const PrimaryButton = ({ label, onPress, disabled, loading }: PrimaryButtonProps) => {
+export const PrimaryButton = ({
+  label,
+  onPress,
+  disabled = false,
+  loading = false,
+}: PrimaryButtonProps) => {
+  const isDisabled = disabled || loading;
+
   return (
-    <Pressable style={styles.button} disabled={disabled} onPress={onPress}>
+    <Pressable
+      style={[styles.button, isDisabled && styles.buttonDisabled]}
+      disabled={isDisabled}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityState={{
+        disabled: isDisabled,
+        busy: loading,
+      }}
+    >
       {loading ? (
-        <Text style={styles.loadingText}>Loading...</Text>
+        <ActivityIndicator color={colors.card} />
       ) : (
         <Text style={styles.buttonText}>{label}</Text>
       )}
@@ -22,19 +46,20 @@ export const PrimaryButton = ({ label, onPress, disabled, loading }: PrimaryButt
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: '#16A34A',
+    backgroundColor: colors.primary,
     padding: 12,
-    borderRadius: 12,
+    borderRadius: radius.button,
     alignItems: 'center',
     justifyContent: 'center',
+    minHeight: 44,
+  },
+  buttonDisabled: {
+    opacity: 0.5,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: colors.card,
+    fontFamily: fonts.medium,
     fontSize: 16,
-    fontWeight: '600' as any,
-  },
-  loadingText: {
-    color: '#FFFFFF',
-    fontSize: 14,
+    textAlign: 'center',
   },
 });

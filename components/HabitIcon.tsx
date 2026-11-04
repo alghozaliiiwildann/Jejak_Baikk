@@ -1,6 +1,15 @@
+
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import Svg, { Path } from 'react-native-svg';
+import {
+  Droplet,
+  Dumbbell,
+  BookOpen,
+  Code,
+  Leaf,
+  Heart,
+  Smile,
+  Star,
+} from 'lucide-react-native';
 
 interface HabitIconProps {
   name: string;
@@ -8,30 +17,19 @@ interface HabitIconProps {
   color: string;
 }
 
-export const HabitIcon = ({ name, size, color }: HabitIconProps) => {
-  const iconMap: Record<string, string> = {
-    'kesehatan': 'M12 2c5.523 0 10 4.477 10 10s-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2zM12 4c-3.309 0-6 2.691-6 6s2.691 6 6 6s6-2.691 6-6-2.691-6-6-6z',
-    'produktivitas': 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 2c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7z',
-    'pendidikan': 'M12 2c-4.41 0-8 3.588-8 8s3.59 8 8 8 8-3.588 8-8-3.59-8-8-8zM12 4c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z',
-    'hiburan': 'M12 2c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7zM2 12h10v2H2v-2zm0 4h6v2H2v-2zm5.165-6.628c-.288.6-1.03 1.085-1.89 1.085-1.08 0-1.916-.664-2.327-1.195-.412-.531-.638-1.236-.526-1.98.113-.744.594-1.36 1.197-1.623.599-.263 1.251-.323 1.993-.192 1.436.233 2.376 1.429 2.561 2.878.133.938.115 1.995-.102 2.79-.195.717-.942.995-1.506.917-.564-.078-1.01-.452-1.184-.935-.176-.483-.303-.997-.288-1.256.017-.258.155-.516.316-.653.161-.137.303-.23.47-.253.323-.044.533.057.68.306.147.253.35.46.53.56.22.13.45.2.69.16.13-.18.26-.36.33-.47.05-.22.05-.42.02-.61z',
-    'self care': 'M12 2c-4.41 0-8 3.588-8 8s3.59 8 8 8 8-3.588 8-8-3.59-8-8-8zM0 12h12v2H0v-2zm0 4h12v2H0v-2zm5.165-6.628c-.288.6-1.03 1.085-1.89 1.085-1.08 0-1.916-.664-2.327-1.195-.412-.531-.638-1.236-.526-1.98.113-.744.594-1.36 1.197-1.623.599-.263 1.251-.323 1.993-.192 1.436.233 2.376 1.429 2.561 2.878.133.938.115 1.995-.102 2.79-.195.717-.942.995-1.506.917-.564-.078-1.01-.452-1.184-.935-.176-.483-.303-.997-.288-1.256.017-.258.155-.516.316-.653.161-.137.303-.23.47-.253.323-.044.533.057.68.306.147.253.35.46.53.56.22.13.45.2.69.16.13-.18.26-.36.33-.47.05-.22.05-.42.02-.61z',
-    'lainnya': 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 2c3.87 0 7 3.13 7 7s-3.13 7-7 7-7-3.13-7-7 3.13-7 7-7z',
-  };
-
-  const path = iconMap[name] || iconMap['kesehatan'];
-
-  return (
-    <View style={styles.container}>
-      <Svg width={size} height={size}>
-        <Path d={path} fill={color} />
-      </Svg>
-    </View>
-  );
+const iconMap = {
+  droplet: Droplet,
+  dumbbell: Dumbbell,
+  'book-open': BookOpen,
+  code: Code,
+  leaf: Leaf,
+  heart: Heart,
+  smile: Smile,
+  star: Star,
 };
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export const HabitIcon = ({ name, size, color }: HabitIconProps) => {
+  const Icon = iconMap[name as keyof typeof iconMap] ?? Star;
+
+  return <Icon size={size} color={color} />;
+};

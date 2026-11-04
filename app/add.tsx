@@ -1,5 +1,6 @@
 // Add Habit Page — Tambah Kebiasaan (PRD bagian 8.3)
 import React, { useState } from 'react';
+import type { HabitCategory } from '../types/habit';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -14,7 +15,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useHabits } from '../hooks/useHabits';
-import type { HabitCategory } from '../types/habit';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { SecondaryButton } from '../components/SecondaryButton';
 import { CategoryDropdown } from '../components/CategoryDropdown';
@@ -26,7 +26,7 @@ export default function AddHabitScreen() {
 
   const [name, setName] = useState('');
   const [target, setTarget] = useState('');
-  const [category, setCategory] = useState<string>('Kesehatan');
+  const [category, setCategory] = useState<HabitCategory>('Kesehatan');
   const [icon, setIcon] = useState('droplet');
   const [nameError, setNameError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);

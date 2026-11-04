@@ -1,14 +1,18 @@
+
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors, fonts, radius } from '../theme';
+import { HabitIcon } from './HabitIcon';
 
 const HABIT_ICON_OPTIONS = [
-  { value: 'kesehatan', label: 'Kesehatan' },
-  { value: 'produktivitas', label: 'Produktivitas' },
-  { value: 'pendidikan', label: 'Pendidikan' },
-  { value: 'hiburan', label: 'Hiburan' },
-  { value: 'self care', label: 'Self Care' },
-  { value: 'lainnya', label: 'Lainnya' },
+  { value: 'droplet', label: 'Air' },
+  { value: 'dumbbell', label: 'Olahraga' },
+  { value: 'book-open', label: 'Membaca' },
+  { value: 'code', label: 'Coding' },
+  { value: 'leaf', label: 'Alam' },
+  { value: 'heart', label: 'Kesehatan' },
+  { value: 'smile', label: 'Bahagia' },
+  { value: 'star', label: 'Lainnya' },
 ] as const;
 
 interface HabitIconPickerProps {
@@ -18,9 +22,10 @@ interface HabitIconPickerProps {
 
 export const HabitIconPicker = ({ value, onChange }: HabitIconPickerProps) => {
   return (
-    <View style={styles.grid} accessibilityRole="button" accessibilityState={{ selected: false }} accessibilityLabel="Pilih ikon kebiasaan">
+    <View style={styles.grid}>
       {HABIT_ICON_OPTIONS.map((option) => {
         const selected = option.value === value;
+
         return (
           <Pressable
             key={option.value}
@@ -30,10 +35,22 @@ export const HabitIconPicker = ({ value, onChange }: HabitIconPickerProps) => {
             accessibilityState={{ selected }}
             accessibilityLabel={`Pilih ikon ${option.label}`}
           >
-            <View style={styles.iconText}><Text>{option.label.charAt(0)}</Text></View>
-            <Text style={[styles.label, selected && styles.labelSelected]} numberOfLines={1}>
+            <HabitIcon
+              name={option.value}
+              size={22}
+              color={selected ? colors.primary : colors.textSecondary}
+            />
+
+            <Text
+              style={[styles.label, selected && styles.labelSelected]}
+              numberOfLines={1}
+            >
               {option.label}
             </Text>
+
+            {selected && (
+              <Text style={styles.selectedIndicator}>Terpilih</Text>
+            )}
           </Pressable>
         );
       })}
@@ -48,9 +65,9 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   tile: {
-    width: '33%',
-    minWidth: 44,
-    minHeight: 64,
+    width: '22%',
+    minWidth: 64,
+    minHeight: 76,
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 10,
@@ -73,11 +90,10 @@ const styles = StyleSheet.create({
     color: colors.success,
     fontFamily: fonts.medium,
   },
-  iconText: {
-    color: colors.text,
-    fontSize: 12,
+  selectedIndicator: {
     fontFamily: fonts.medium,
-    alignItems: 'center',
-    justifyContent: 'center',
+    fontSize: 9,
+    color: colors.success,
+    marginTop: 3,
   },
 });

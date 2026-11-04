@@ -1,18 +1,24 @@
+
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { colors, fonts, radius } from '../theme';
+import { colors, fonts } from '../theme';
 
 interface CircularProgressProps {
   percent: number;
   size?: number;
 }
 
-export const CircularProgress = ({ percent, size = 128 }: CircularProgressProps) => {
+export const CircularProgress = ({
+  percent,
+  size = 128,
+}: CircularProgressProps) => {
+  const clamped = Math.max(0, Math.min(100, Math.round(percent)));
+
   const strokeWidth = 16;
   const radiusVal = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radiusVal;
-  const offset = circumference - (percent / 100) * circumference;
+  const offset = circumference - (clamped / 100) * circumference;
 
   return (
     <View
@@ -21,17 +27,24 @@ export const CircularProgress = ({ percent, size = 128 }: CircularProgressProps)
         { width: size, height: size },
       ]}
       accessibilityRole="progressbar"
-      accessibilityValue={{ min: 0, max: 100, now: percent }}
+      accessibilityValue={{
+        min: 0,
+        max: 100,
+        now: clamped,
+      }}
     >
       <Svg width={size} height={size} style={styles.svg}>
+        {/* Track atau lingkaran latar */}
         <Circle
           cx={size / 2}
           cy={size / 2}
           r={radiusVal}
           fill="none"
-          stroke={colors.primary}
+          stroke={colors.border}
           strokeWidth={strokeWidth}
         />
+
+        {/* Fill atau progres */}
         <Circle
           cx={size / 2}
           cy={size / 2}
@@ -42,9 +55,12 @@ export const CircularProgress = ({ percent, size = 128 }: CircularProgressProps)
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           strokeLinecap="round"
+          rotation="-90"
+          origin={`${size / 2}, ${size / 2}`}
         />
       </Svg>
-      <Text style={styles.percentText}>{percent}%</Text>
+
+      <Text style={styles.percentText}>{clamped}%</Text>
     </View>
   );
 };
@@ -58,9 +74,9 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   percentText: {
+    fontFamily: fonts.medium,
     fontSize: 18,
     color: colors.text,
-    fontWeight: '600',
     textAlign: 'center',
   },
-});
+});

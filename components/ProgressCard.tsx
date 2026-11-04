@@ -1,5 +1,12 @@
+
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  type StyleProp,
+  type ViewStyle,
+} from 'react-native';
 import { CircularProgress } from './CircularProgress';
 import { ProgressBar } from './ProgressBar';
 import { colors, fonts, radius, shadow } from '../theme';
@@ -10,7 +17,7 @@ interface ProgressCardProps {
   total: number;
   title?: string;
   size?: 'default' | 'large';
-  style?: any;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const ProgressCard = ({
@@ -22,19 +29,34 @@ export const ProgressCard = ({
   style,
 }: ProgressCardProps) => {
   const clamped = Math.max(0, Math.min(100, Math.round(percent)));
+  const safeTotal = Math.max(0, Math.floor(total));
+  const safeDone = Math.max(0, Math.min(safeTotal, Math.floor(done)));
+
   const summary =
-    total > 0 ? `${done} dari ${total} kebiasaan selesai` : 'Belum ada kebiasaan';
+    safeTotal > 0
+      ? `${safeDone} dari ${safeTotal} kebiasaan selesai`
+      : 'Belum ada kebiasaan';
+
   const isLarge = size === 'large';
 
   return (
-    <View style={[styles.card, style]} accessibilityRole="summary">
+    <View
+      style={[styles.card, style]}
+      accessibilityRole="summary"
+      accessibilityLabel={`${title}. ${summary}. Progres ${clamped}%`}
+    >
       <View style={isLarge ? styles.rowLarge : styles.row}>
-        <CircularProgress percent={clamped} size={isLarge ? 128 : 76} />
+        <CircularProgress
+          percent={clamped}
+          size={isLarge ? 128 : 76}
+        />
+
         <View style={isLarge ? styles.textsLarge : styles.texts}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.summary}>{summary}</Text>
         </View>
       </View>
+
       <ProgressBar percent={clamped} />
     </View>
   );

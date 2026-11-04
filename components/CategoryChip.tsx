@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 import { colors, fonts, radius } from '../theme';
@@ -8,16 +9,24 @@ interface CategoryChipProps {
   onPress?: () => void;
 }
 
-export const CategoryChip = ({ category, selected, onPress }: CategoryChipProps) => {
+export const CategoryChip = ({
+  category,
+  selected = false,
+  onPress,
+}: CategoryChipProps) => {
   return (
     <Pressable
-      style={styles.chip}
+      style={[styles.chip, selected && styles.selectedChip]}
       onPress={onPress}
       accessibilityRole="button"
-      accessibilityState={{ selected: !!selected }}
+      accessibilityState={{ selected }}
       accessibilityLabel={`Kategori: ${category}`}
     >
-      <Text style={styles.chipText}>{category}</Text>
+      <Text
+        style={[styles.chipText, selected && styles.selectedChipText]}
+      >
+        {category}
+      </Text>
     </Pressable>
   );
 };
@@ -34,11 +43,13 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     minWidth: 88,
     minHeight: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   chipText: {
     color: colors.chipTextColor,
+    fontFamily: fonts.medium,
     fontSize: 12,
-    fontWeight: '600',
     textAlign: 'center',
   },
   selectedChip: {
@@ -48,4 +59,4 @@ const styles = StyleSheet.create({
   selectedChipText: {
     color: colors.selectedChipTextColor,
   },
-});
+});

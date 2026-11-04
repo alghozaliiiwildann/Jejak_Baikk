@@ -62,7 +62,7 @@ export default function DevPreview() {
             id: '1',
             name: 'Minum Air',
             icon: 'water',
-            target: 8,
+            target: '8 kali',
           }}
           doneToday={true}
           onToggle={() => setHabitDoneToday(!habitDoneToday)}

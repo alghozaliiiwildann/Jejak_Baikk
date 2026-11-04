@@ -1,43 +1,52 @@
+
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Check } from 'lucide-react-native';
+import type { Habit } from '../types/habit';
 import { HabitIcon } from './HabitIcon';
 import { colors, fonts, radius, shadow } from '../theme';
 
 interface HabitCardProps {
-  habit: {
-    id: string;
-    name: string;
-    icon: string;
-    target?: number;
-  };
+  habit: Pick<Habit, 'id' | 'name' | 'icon' | 'target'>;
   doneToday: boolean;
   onToggle: () => void;
   onPress: () => void;
 }
 
-export const HabitCard = ({ habit, doneToday, onToggle, onPress }: HabitCardProps) => {
+export const HabitCard = ({
+  habit,
+  doneToday,
+  onToggle,
+  onPress,
+}: HabitCardProps) => {
   return (
-    <Pressable
-      style={styles.card}
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityLabel={`Buka detail kebiasaan ${habit.name}`}
-    >
-      <View style={styles.iconBox}>
-        <HabitIcon name={habit.icon} size={22} color={colors.primary} />
-      </View>
+    <View style={styles.card}>
+      <Pressable
+        style={styles.content}
+        onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={`Buka detail kebiasaan ${habit.name}`}
+      >
+        <View style={styles.iconBox}>
+          <HabitIcon
+            name={habit.icon}
+            size={22}
+            color={colors.primary}
+          />
+        </View>
 
-      <View style={styles.body}>
-        <Text style={styles.name} numberOfLines={1}>
-          {habit.name}
-        </Text>
-        {habit.target ? (
-          <Text style={styles.target} numberOfLines={1}>
-            Target: {habit.target}
+        <View style={styles.body}>
+          <Text style={styles.name} numberOfLines={1}>
+            {habit.name}
           </Text>
-        ) : null}
-      </View>
+
+          {habit.target ? (
+            <Text style={styles.target} numberOfLines={1}>
+              Target: {habit.target}
+            </Text>
+          ) : null}
+        </View>
+      </Pressable>
 
       <Pressable
         onPress={onToggle}
@@ -55,10 +64,14 @@ export const HabitCard = ({ habit, doneToday, onToggle, onPress }: HabitCardProp
         }
       >
         {doneToday ? (
-          <Check size={20} color="#FFFFFF" strokeWidth={3} />
+          <Check
+            size={20}
+            color={colors.card}
+            strokeWidth={3}
+          />
         ) : null}
       </Pressable>
-    </Pressable>
+    </View>
   );
 };
 
@@ -72,7 +85,14 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     padding: 12,
     marginBottom: 12,
+    minHeight: 68,
     ...shadow.card,
+  },
+  content: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 8,
     minHeight: 44,
   },
   iconBox: {
@@ -86,7 +106,6 @@ const styles = StyleSheet.create({
   },
   body: {
     flex: 1,
-    marginRight: 8,
   },
   name: {
     fontFamily: fonts.medium,

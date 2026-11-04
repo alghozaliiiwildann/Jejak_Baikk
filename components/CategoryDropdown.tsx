@@ -1,41 +1,53 @@
+
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { ChevronDown } from 'lucide-react-native';
+import type { HabitCategory } from '../types/habit';
 import { colors, fonts, radius, shadow } from '../theme';
 
-export const HABIT_CATEGORIES = [
+export const HABIT_CATEGORIES: HabitCategory[] = [
   'Kesehatan',
   'Produktivitas',
   'Pendidikan',
   'Hiburan',
   'Self Care',
   'Lainnya',
-] as const;
+];
 
 interface CategoryDropdownProps {
-  value: string;
-  onChange: (category: string) => void;
+  value: HabitCategory;
+  onChange: (category: HabitCategory) => void;
 }
 
-export const CategoryDropdown = ({ value, onChange }: CategoryDropdownProps) => {
+export const CategoryDropdown = ({
+  value,
+  onChange,
+}: CategoryDropdownProps) => {
   const [open, setOpen] = useState(false);
 
   return (
-    <View style={styles.wrap} accessibilityRole="button" accessibilityState={{ expanded: open }} accessibilityLabel={`Pilih kategori: ${value}`}>
+    <View style={styles.wrap}>
       <Pressable
         style={styles.trigger}
         onPress={() => setOpen((prev) => !prev)}
         accessibilityRole="button"
+        accessibilityLabel={`Kategori saat ini: ${value}`}
         accessibilityState={{ expanded: open }}
       >
         <Text style={styles.triggerText}>{value}</Text>
-        <ChevronDown size={20} color={colors.textSecondary} style={open ? styles.chevronUp : undefined} />
+
+        <ChevronDown
+          size={20}
+          color={colors.textSecondary}
+          style={open ? styles.chevronUp : undefined}
+        />
       </Pressable>
 
-      {open ? (
+      {open && (
         <View style={styles.list}>
           {HABIT_CATEGORIES.map((category) => {
             const selected = category === value;
+
             return (
               <Pressable
                 key={category}
@@ -45,14 +57,22 @@ export const CategoryDropdown = ({ value, onChange }: CategoryDropdownProps) => 
                   setOpen(false);
                 }}
                 accessibilityRole="button"
+                accessibilityLabel={`Pilih kategori ${category}`}
                 accessibilityState={{ selected }}
               >
-                <Text style={[styles.optionText, selected && styles.optionTextSelected]}>{category}</Text>
+                <Text
+                  style={[
+                    styles.optionText,
+                    selected && styles.optionTextSelected,
+                  ]}
+                >
+                  {category}
+                </Text>
               </Pressable>
             );
           })}
         </View>
-      ) : null}
+      )}
     </View>
   );
 };

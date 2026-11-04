@@ -5,15 +5,15 @@ import { PrimaryButton } from './PrimaryButton';
 import { colors, fonts, radius } from '../theme';
 
 interface EmptyStateProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   actionLabel?: string;
   onAction?: () => void;
 }
 
 export const EmptyState = ({
-  title,
-  description,
+  title = 'Belum ada kebiasaan',
+  description = 'Mulai bangun kebiasaan baik dari sekarang.',
   actionLabel,
   onAction,
 }: EmptyStateProps) => {

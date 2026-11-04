@@ -13,9 +13,9 @@ export const colors = {
   splashBackground: '#F0FDF4',
   // CategoryChip tokens
   chip: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E5E7EB',
-  },
+  backgroundColor: '#FFFFFF', // colors.card
+  borderColor: '#E5E7EB',     // colors.border
+},
   // Selected chip state
   selectedChip: {
     backgroundColor: '#16A34A',
