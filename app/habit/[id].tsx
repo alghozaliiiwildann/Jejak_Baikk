@@ -1,8 +1,15 @@
 // Detail Habit Page — Detail Kebiasaan (PRD bagian 8.5)
 import React, { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
+import { router, Stack, useLocalSearchParams } from 'expo-router';
 import { Check, ChevronLeft, Trash } from 'lucide-react-native';
 import { useHabits } from '../../hooks/useHabits';
 import { PrimaryButton } from '../../components/PrimaryButton';
@@ -10,28 +17,74 @@ import { CategoryChip } from '../../components/CategoryChip';
 import { ConfirmDeleteDialog } from '../../components/ConfirmDeleteDialog';
 import { EmptyState } from '../../components/EmptyState';
 import { HabitIcon } from '../../components/HabitIcon';
-import {
-  formatTanggalIndonesia,
-  getTodayLocal,
-} from '../../utils/date';
+import { formatTanggalIndonesia, getTodayLocal } from '../../utils/date';
 import { colors, fonts, radius, shadow, HIT_SIZE } from '../../theme';
 
 export default function DetailHabitScreen() {
-  const { id } = useLocalSearchParams<{ id: string }>();
+  const { id } = useLocalSearchParams<{ id?: string | string[] }>();
   const { getHabit, toggleToday, deleteHabit } = useHabits();
   const [confirmVisible, setConfirmVisible] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
-  const habit = getHabit(id ?? '');
+  const habitId = Array.isArray(id) ? id[0] : id;
+  const habit = getHabit(habitId ?? '');
 
   const goHome = () => router.replace('/(tabs)');
+
+  const goBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      goHome();
+    }
+  };
+
+  const handleToggle = async () => {
+    if (!habit) return;
+    setActionError(null);
+    try {
+      await toggleToday(habit.id);
+    } catch {
+      setActionError('Gagal memperbarui status hari ini. Silakan coba lagi.');
+    }
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!habit) return;
+    setConfirmVisible(false);
+    setActionError(null);
+    // Flag mencegah layar menampilkan "tidak ditemukan" sesaat saat state berubah.
+    setDeleting(true);
+    try {
+      await deleteHabit(habit.id);
+      goHome();
+    } catch {
+      setDeleting(false);
+      setActionError('Gagal menghapus kebiasaan. Silakan coba lagi.');
+    }
+  };
+
+  // Sedang menghapus: jangan tampilkan EmptyState "Kebiasaan tidak ditemukan".
+  if (deleting && !habit) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <Stack.Screen options={{ headerShown: false }} />
+        <View style={styles.stateWrap}>
+          <ActivityIndicator size="small" color={colors.primary} />
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   if (!habit) {
     return (
       <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+        <Stack.Screen options={{ headerShown: false }} />
         <View style={styles.header}>
           <Pressable
             style={styles.backButton}
-            onPress={goHome}
+            onPress={goBack}
             accessibilityRole="button"
             accessibilityLabel="Kembali"
             hitSlop={8}
@@ -55,19 +108,15 @@ export default function DetailHabitScreen() {
   const doneToday = habit.completions.includes(today);
   const history = [...habit.completions].sort((a, b) => (a < b ? 1 : -1));
 
-  const handleConfirmDelete = async () => {
-    setConfirmVisible(false);
-    await deleteHabit(habit.id);
-    goHome();
-  };
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      <Stack.Screen options={{ headerShown: false }} />
+
       {/* Header: tombol kembali + judul */}
       <View style={styles.header}>
         <Pressable
           style={styles.backButton}
-          onPress={() => (router.canGoBack() ? router.back() : goHome())}
+          onPress={goBack}
           accessibilityRole="button"
           accessibilityLabel="Kembali"
           hitSlop={8}
@@ -99,7 +148,7 @@ export default function DetailHabitScreen() {
         {/* Status selesai hari ini */}
         <View style={styles.card}>
           <Text style={styles.todayDate}>
-            Tanggal hari ini: {formatTanggalIndonesia(getTodayLocal())}
+            Tanggal hari ini: {formatTanggalIndonesia(today)}
           </Text>
 
           {doneToday ? (
@@ -109,10 +158,17 @@ export default function DetailHabitScreen() {
             </View>
           ) : null}
 
+          {actionError ? (
+            <Text style={styles.actionError} accessibilityRole="alert">
+              {actionError}
+            </Text>
+          ) : null}
+
           <View style={styles.toggleWrap}>
             <PrimaryButton
               label={doneToday ? 'Batalkan Penyelesaian' : 'Selesai hari ini'}
-              onPress={() => toggleToday(habit.id)}
+              onPress={handleToggle}
+              disabled={deleting}
             />
           </View>
         </View>
@@ -136,8 +192,9 @@ export default function DetailHabitScreen() {
 
         {/* Hapus kebiasaan (latar merah muda lembut) */}
         <Pressable
-          style={({ pressed }) => [styles.deleteButton, pressed && styles.deletePressed]}
+          style={[styles.deleteButton, deleting ? styles.deleteDisabled : null]}
           onPress={() => setConfirmVisible(true)}
+          disabled={deleting}
           accessibilityRole="button"
           accessibilityLabel={`Hapus kebiasaan ${habit.name}`}
         >
@@ -160,6 +217,11 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  stateWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -242,6 +304,12 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.success,
   },
+  actionError: {
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    color: colors.error,
+    marginBottom: 12,
+  },
   toggleWrap: {
     marginTop: 4,
   },
@@ -286,13 +354,11 @@ const styles = StyleSheet.create({
     gap: 8,
     borderRadius: radius.button,
     backgroundColor: colors.errorSoft,
-    borderWidth: 1,
-    borderColor: '#FECACA',
     paddingVertical: 12,
     marginTop: 8,
   },
-  deletePressed: {
-    opacity: 0.85,
+  deleteDisabled: {
+    opacity: 0.5,
   },
   deleteText: {
     fontFamily: fonts.semibold,

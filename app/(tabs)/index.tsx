@@ -1,9 +1,9 @@
 // Home Page (PRD bagian 8.2)
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import {
   ActivityIndicator,
+  FlatList,
   Pressable,
-  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -14,27 +14,36 @@ import { Bell, Plus } from 'lucide-react-native';
 import { useHabits } from '../../hooks/useHabits';
 import { useProgress } from '../../hooks/useProgress';
 import { EmptyState } from '../../components/EmptyState';
+import { ErrorState } from '../../components/ErrorState';
 import { HabitCard } from '../../components/HabitCard';
 import { ProgressCard } from '../../components/ProgressCard';
-import { formatTanggalIndonesia, getGreeting, getTodayLocal } from '../../utils/date';
-import { colors, fonts, shadow } from '../../theme';
+import {
+  formatTanggalIndonesia,
+  getGreeting,
+  getTodayLocal,
+} from '../../utils/date';
+import { colors, fonts, shadow, HIT_SIZE } from '../../theme';
 
 export default function HomeScreen() {
-  const { habits, loading, error, toggleToday } = useHabits();
+  const { habits, loading, error, retry, toggleToday } = useHabits();
   const { todayPercent, doneToday, total } = useProgress();
+  const [actionError, setActionError] = useState<string | null>(null);
+
   const today = getTodayLocal();
 
-  // Jika pembacaan data gagal, arahkan ke layar Error (PRD bagian 8.6)
-  useEffect(() => {
-    if (error) {
-      router.replace('/error');
+  const handleToggle = async (id: string) => {
+    setActionError(null);
+    try {
+      await toggleToday(id);
+    } catch {
+      setActionError('Gagal memperbarui kebiasaan. Silakan coba lagi.');
     }
-  }, [error]);
+  };
 
   if (loading) {
     return (
       <SafeAreaView style={styles.safeArea}>
-        <View style={styles.loading}>
+        <View style={styles.stateWrap}>
           <ActivityIndicator size="small" color={colors.primary} />
           <Text style={styles.loadingText}>Memuat data...</Text>
         </View>
@@ -42,55 +51,70 @@ export default function HomeScreen() {
     );
   }
 
+  if (error) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.stateWrap}>
+          <ErrorState onRetry={retry} onBack={() => router.replace('/error')} />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
-      <ScrollView
+      <FlatList
+        data={habits}
+        keyExtractor={(item) => item.id}
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}
-      >
-        {/* Header: sapaan, subteks, tanggal, ikon lonceng dekoratif */}
-        <View style={styles.header}>
-          <View style={styles.headerTexts}>
-            <Text style={styles.greeting}>Hai, Arief 👋</Text>
-            <Text style={styles.subGreeting}>{'Selamat ' + getGreeting() + '!'}</Text>
-            <Text style={styles.date}>{formatTanggalIndonesia(getTodayLocal())}</Text>
+        ListHeaderComponent={
+          <View>
+            {/* Header: sapaan, tanggal, ikon lonceng dekoratif */}
+            <View style={styles.header}>
+              <View style={styles.headerTexts}>
+                <Text style={styles.greeting}>Selamat {getGreeting()}!</Text>
+                <Text style={styles.date}>{formatTanggalIndonesia(today)}</Text>
+              </View>
+              <View
+                style={styles.bellBox}
+                accessibilityElementsHidden
+                importantForAccessibility="no"
+              >
+                <Bell size={22} color={colors.textSecondary} />
+              </View>
+            </View>
+
+            {/* Kartu Progres Hari Ini */}
+            <ProgressCard percent={todayPercent} done={doneToday} total={total} />
+
+            {/* Daftar Kebiasaan */}
+            <Text style={styles.sectionTitle}>Daftar Kebiasaan</Text>
+
+            {actionError ? (
+              <Text style={styles.actionError} accessibilityRole="alert">
+                {actionError}
+              </Text>
+            ) : null}
           </View>
-          <View
-            style={styles.bellBox}
-            accessibilityElementsHidden
-            importantForAccessibility="no"
-          >
-            <Bell size={22} color={colors.textSecondary} />
-          </View>
-        </View>
-
-        {/* Kartu Progres Hari Ini */}
-        <ProgressCard percent={todayPercent} done={doneToday} total={total} />
-
-        {/* Daftar Kebiasaan */}
-        <Text style={styles.sectionTitle}>Daftar Kebiasaan</Text>
-
-        {habits.length === 0 ? (
+        }
+        ListEmptyComponent={
           <EmptyState
             title="Belum ada kebiasaan"
             description="Mulai bangun rutinitas positifmu dengan menambahkan kebiasaan pertama."
             actionLabel="Tambah Kebiasaan"
             onAction={() => router.push('/add')}
           />
-        ) : (
-          habits.map((habit) => (
-            <HabitCard
-              key={habit.id}
-              habit={{ id: habit.id, name: habit.name, icon: habit.icon }}
-              doneToday={habit.completions.includes(today)}
-              onToggle={() => toggleToday(habit.id)}
-              onPress={() =>
-                router.push({ pathname: '/habit/[id]', params: { id: habit.id } })
-              }
-            />
-          ))
+        }
+        renderItem={({ item }) => (
+          <HabitCard
+            habit={item}
+            doneToday={item.completions.includes(today)}
+            onToggle={() => handleToggle(item.id)}
+            onPress={() => router.push({ pathname: '/habit/[id]', params: { id: item.id } })}
+          />
         )}
-      </ScrollView>
+      />
 
       {/* Tombol bulat + membuka Tambah Kebiasaan */}
       <Pressable
@@ -115,11 +139,12 @@ const styles = StyleSheet.create({
     padding: 20,
     paddingBottom: 110,
   },
-  loading: {
+  stateWrap: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     gap: 10,
+    paddingHorizontal: 20,
   },
   loadingText: {
     fontFamily: fonts.regular,
@@ -141,21 +166,15 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: colors.text,
   },
-  subGreeting: {
-    fontFamily: fonts.regular,
-    fontSize: 14,
-    color: colors.textSecondary,
-    marginTop: 2,
-  },
   date: {
     fontFamily: fonts.regular,
     fontSize: 13,
     color: colors.textSecondary,
-    marginTop: 6,
+    marginTop: 4,
   },
   bellBox: {
-    width: 44,
-    height: 44,
+    width: HIT_SIZE,
+    height: HIT_SIZE,
     borderRadius: 12,
     borderWidth: 1,
     borderColor: colors.border,
@@ -169,6 +188,12 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginTop: 24,
     marginBottom: 14,
+  },
+  actionError: {
+    fontFamily: fonts.regular,
+    fontSize: 13,
+    color: colors.error,
+    marginBottom: 12,
   },
   fab: {
     position: 'absolute',

@@ -1,5 +1,5 @@
 // Add Habit Page — Tambah Kebiasaan (PRD bagian 8.3)
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -11,13 +11,13 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, Stack } from 'expo-router';
 import { ChevronLeft } from 'lucide-react-native';
 import { useHabits } from '../hooks/useHabits';
 import type { HabitCategory } from '../types/habit';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { SecondaryButton } from '../components/SecondaryButton';
-import { CategoryDropdown } from '../components/CategoryDropdown';
+import { CategoryDropdown, HABIT_CATEGORIES } from '../components/CategoryDropdown';
 import { HabitIconPicker } from '../components/HabitIconPicker';
 import { colors, fonts, radius, HIT_SIZE } from '../theme';
 
@@ -26,11 +26,19 @@ export default function AddHabitScreen() {
 
   const [name, setName] = useState('');
   const [target, setTarget] = useState('');
-  const [category, setCategory] = useState<string>('Kesehatan');
+  const [category, setCategory] = useState<HabitCategory>('Kesehatan');
   const [icon, setIcon] = useState('droplet');
   const [nameError, setNameError] = useState<string | null>(null);
+  const [formError, setFormError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const redirectTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (redirectTimer.current) clearTimeout(redirectTimer.current);
+    };
+  }, []);
 
   const goBack = () => {
     if (router.canGoBack()) {
@@ -38,6 +46,12 @@ export default function AddHabitScreen() {
     } else {
       router.replace('/(tabs)');
     }
+  };
+
+  // Kategori dari dropdown berupa string; sempitkan ke HabitCategory tanpa cast.
+  const handleCategoryChange = (value: string) => {
+    const next = HABIT_CATEGORIES.find((item) => item === value);
+    if (next) setCategory(next);
   };
 
   const handleSave = async () => {
@@ -50,16 +64,19 @@ export default function AddHabitScreen() {
     }
 
     setNameError(null);
+    setFormError(null);
     setSaving(true);
     try {
       await addHabit({
         name: trimmed,
         target: target.trim() ? target.trim() : undefined,
-        category: category as HabitCategory,
+        category,
         icon,
       });
       setSaved(true); // feedback singkat
-      setTimeout(() => router.replace('/(tabs)'), 700);
+      redirectTimer.current = setTimeout(() => router.replace('/(tabs)'), 700);
+    } catch {
+      setFormError('Gagal menyimpan kebiasaan. Silakan coba lagi.');
     } finally {
       setSaving(false);
     }
@@ -67,6 +84,9 @@ export default function AddHabitScreen() {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+      {/* Layar ini punya header sendiri; header bawaan Stack disembunyikan */}
+      <Stack.Screen options={{ headerShown: false }} />
+
       {/* Header: tombol kembali + judul */}
       <View style={styles.header}>
         <Pressable
@@ -126,7 +146,7 @@ export default function AddHabitScreen() {
           {/* Kategori */}
           <View style={styles.field}>
             <Text style={styles.label}>Kategori</Text>
-            <CategoryDropdown value={category} onChange={setCategory} />
+            <CategoryDropdown value={category} onChange={handleCategoryChange} />
           </View>
 
           {/* Pilih Ikon (opsional) */}
@@ -135,18 +155,24 @@ export default function AddHabitScreen() {
             <HabitIconPicker value={icon} onChange={setIcon} />
           </View>
 
-          {/* Feedback sukses */}
+          {/* Feedback sukses / gagal simpan */}
           {saved ? (
             <View style={styles.successBanner} accessibilityRole="alert">
               <Text style={styles.successText}>Kebiasaan berhasil ditambahkan.</Text>
             </View>
           ) : null}
 
+          {formError ? (
+            <Text style={styles.errorText} accessibilityRole="alert">
+              {formError}
+            </Text>
+          ) : null}
+
           <View style={styles.actions}>
             <PrimaryButton
               label="Simpan"
               onPress={handleSave}
-              disabled={saving}
+              disabled={saving || saved}
               loading={saving}
             />
             <View style={styles.gap} />

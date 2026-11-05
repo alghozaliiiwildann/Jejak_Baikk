@@ -7,17 +7,12 @@ import { Leaf } from 'lucide-react-native';
 import { useHabits } from '../hooks/useHabits';
 import { colors, fonts, radius } from '../theme';
 
-const LOAD_TIMEOUT_MS = 10000;
+// Batas waktu membaca data lokal; lewat batas -> layar Error (PRD 8.1).
+const LOAD_TIMEOUT_MS = 8000;
 
 export default function SplashScreen() {
-  const { loading, error, retry } = useHabits();
+  const { loading, error } = useHabits();
   const finishedRef = useRef(false);
-
-  // Mulai membaca data lokal saat splash tampil (sekali saja saat mount)
-  useEffect(() => {
-    retry();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   // Berhasil membaca data -> lanjut ke Home
   useEffect(() => {
@@ -65,7 +60,12 @@ export default function SplashScreen() {
         </View>
 
         {/* Dekorasi daun transparan di sudut bawah */}
-        <View style={styles.decor} pointerEvents="none" accessibilityElementsHidden importantForAccessibility="no">
+        <View
+          style={styles.decor}
+          pointerEvents="none"
+          accessibilityElementsHidden
+          importantForAccessibility="no"
+        >
           <Leaf size={120} color={colors.secondary} strokeWidth={1.2} style={styles.decorLeafLeft} />
           <Leaf size={90} color={colors.secondary} strokeWidth={1.2} style={styles.decorLeafRight} />
         </View>
